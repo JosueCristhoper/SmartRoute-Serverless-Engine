@@ -26,6 +26,8 @@ El proyecto se divide en dos componentes principales:
 
 ## Cómo empezar
 
-Cada componente tiene sus propias instrucciones de configuración:
-1. Revisa el README del [Backend](./SmartRoute-Cloud-Engine) para levantar la API con Docker.
-2. Revisa el README del [Worker](./smartroute-worker) (Próximamente) para configurar el entorno serverless.
+Cada componente es independiente y puede ejecutarse mediante Docker:
+1. **[Backend API](./SmartRoute-Cloud-Engine):** Gestiona la lógica de negocio y la interfaz administrativa.
+2. **[Worker Engine](./smartroute-worker):** Procesa los cálculos de rutas de forma asíncrona mediante colas de Azure.
+
+> **Nota:** Ambos componentes requieren la configuración de sus respectivos archivos `.env` para conectar con Azure Storage y PostgreSQL.
