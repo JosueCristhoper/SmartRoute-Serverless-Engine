@@ -20,7 +20,7 @@ El proyecto se divide en dos componentes principales:
 1. **Client/Frontend:** Envía coordenadas de origen y destino.
 2. **Django API (Producer):** Valida los datos y los coloca en una **Azure Storage Queue**.
 3. **Azure Queue Storage:** Actúa como colchón de persistencia y desacoplamiento.
-4. **Azure Function (Consumer):** Se dispara automáticamente al recibir un mensaje, calcula la distancia y guarda el resultado.
+4. **Azure Function (Consumer):** Se dispara automáticamente al recibir un mensaje, extrae las coordenadas de PostgreSQL, calcula la distancia mediante la formula de Haversine y actualiza la fila correspondiente en la base de datos de forma asíncrona.
 
 ---
 
