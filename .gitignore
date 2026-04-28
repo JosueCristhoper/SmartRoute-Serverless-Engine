@@ -212,3 +212,5 @@ local.settings.json
 
 # Añadimos el archivo .env.worker
 .env.worker
+# Añadimos el archivo .env.azure
+.env.azure

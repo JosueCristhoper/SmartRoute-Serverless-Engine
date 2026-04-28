@@ -1,0 +1,44 @@
+services:
+  # 1. Backend de Django
+  web:
+    build: ./SmartRoute-Cloud-Engine
+    container_name: django-backend
+    volumes:
+     - ./SmartRoute-Cloud-Engine:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./SmartRoute-Cloud-Engine/.env
+    environment:
+      # AQUÍ ESTÁ EL TRUCO: Pasamos las variables de la raíz al contenedor de Django
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+    # Añadimos el command que es la pieza que falta para levantar django
+    command:  python manage.py runserver 0.0.0.0:8000
+    # Esto para asegurar que Django no intente arrancar hasta que la BD este lista
+    depends_on:
+      - db
+      - azurite
+
+  # 2. Base de datos local (PostgreSQL)
+  db:
+    image: postgres:15
+    container_name: db-local-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5433:5432"
+
+  # 3. El simulador de colas de Azure (Azurite)
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite-local
+    ports:
+      - "10001:10001"
+    command: "azurite-queue --queueHost 0.0.0.0 --skipApiVersionCheck"
