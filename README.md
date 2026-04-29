@@ -20,14 +20,27 @@ El proyecto se divide en dos componentes principales:
 1. **Client/Frontend:** Envía coordenadas de origen y destino.
 2. **Django API (Producer):** Valida los datos y los coloca en una **Azure Storage Queue**.
 3. **Azure Queue Storage:** Actúa como colchón de persistencia y desacoplamiento.
-4. **Azure Function (Consumer):** Se dispara automáticamente al recibir un mensaje, extrae las coordenadas de PostgreSQL, calcula la distancia mediante la formula de Haversine y actualiza la fila correspondiente en la base de datos de forma asíncrona.
+4. **Azure Function (Consumer):** Se dispara automáticamente al recibir un mensaje, calcula la distancia y guarda el resultado.
 
 ---
 
 ## Cómo empezar
 
-Cada componente es independiente y puede ejecutarse mediante Docker:
-1. **[Backend API](./SmartRoute-Cloud-Engine):** Gestiona la lógica de negocio y la interfaz administrativa.
-2. **[Worker Engine](./smartroute-worker):** Procesa los cálculos de rutas de forma asíncrona mediante colas de Azure.
+Este proyecto está totalmente orquestado con **Docker Compose**, lo que permite levantar todo el entorno (Base de Datos, Sistema de Colas y Backend) con un solo comando.
+### 1. Configurar Variables de Entorno
+Crea un archivo `.env` en la raíz del proyecto basándote en el archivo de ejemplo. Este archivo centraliza la configuración tanto para el entorno local como para la conexión con servicios de Azure en la nube.
 
-> **Nota:** Ambos componentes requieren la configuración de sus respectivos archivos `.env` para conectar con Azure Storage y PostgreSQL.
+### 2. Levantar el ecosistema
+Ejecuta el siguiente comando en la terminal:
+```bash
+docker compose up --build
+```
+
+### 3. Inicializar Base de Datos (Solo la primera vez)
+Una vez que los contenedores estén corriendo, ejecuta las migraciones y crea tu usuario administrador:
+```bash
+docker exec -it django-backend python manage.py migrate
+docker exec -it django-backend python manage.py createsuperuser
+```
+
+> **Nota:** El panel de administración estará disponible en http://localhost:8000/admin.

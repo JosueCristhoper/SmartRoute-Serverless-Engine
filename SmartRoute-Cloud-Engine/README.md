@@ -40,39 +40,23 @@ Este es el backend oficial del proyecto **SmartRoute**, un motor en la nube dise
 
 ## Cómo ejecutar el proyecto en local
 
-Para levantar este proyecto en tu máquina, no necesitas instalar Python ni Django directamente, todo funciona a través de **Docker**.
+Para levantar este proyecto, ya no necesitas construir imágenes manualmente; todo está automatizado a través de **Docker Compose**.
 
 ### 1. Variables de Entorno
-Debido a medidas de seguridad, las credenciales de la base de datos no se suben al repositorio. Debes crear un archivo `.env` en la raíz del proyecto (al mismo nivel que `manage.py`) con la siguiente estructura:
+Asegúrate de tener el archivo `.env` en la raíz del proyecto (al mismo nivel que el archivo `docker-compose.yml`). Este archivo centraliza la configuración para los contenedores y los servicios de **Azure**.
 
-```env
-DB_NAME=postgres
-DB_USER=tu_usuario_de_azure
-DB_PASSWORD=tu_contraseña
-DB_HOST=tu_servidor.postgres.database.azure.com
-DB_PORT=5432
-AZURE_STORAGE_CONNECTION_STRING="cadena_de_conexion_de_la_cola_de_azure"
-```
-### 2. Construir la Imagen Docker
-Estando en la raíz del proyecto, ejecuta el siguiente comando para construir la imagen con todas las dependencias necesarias:
+### 2. Ejecución con Docker Compose
+Desde la terminal en la raíz del repositorio, ejecuta el siguiente comando:
 
+```bash
+docker compose up web
 ```
-docker build -t smartroute-pro .
-```
+### 3. Gestión del Contenedor
+Para realizar tareas administrativas dentro del contenedor de Django una vez esté en marcha:
+* **Ejecutar Migraciones:** `docker exec -it django-backend python manage.py migrate`
+* **Crear Superusuario:** `docker exec -it django-backend python manage.py createsuperuser`
+* **Ver Logs en tiempo real:** `docker compose logs -f web`
 
-### 3. Levantar el Contenedor
-Una vez construida la imagen, levanta el contenedor interactivo montando tu código local en tiempo real:
-
-```
-docker run -it --rm -v ${PWD}:/app -p 8000:8000 smartroute-pro bash
-```
-
-### 4. Arrancar el Servidor
-Dentro de la terminal del contenedor (root@...:/app#), ejecuta el servidor de desarrollo:
-
-```
-python manage.py runserver 0.0.0.0:8000
-```
 ### Accesos Directos
 * El panel de administración estará disponible en: http://localhost:8000/admin
 * API REST (Datos en formato JSON): http://localhost:8000/api/routes/
